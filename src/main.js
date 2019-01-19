@@ -9,11 +9,10 @@ import axios from 'axios'
 //import qs from 'qs'
 import store from './vuex/store'
 import App from './App'
+import VeeValidate from 'vee-validate'; 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
-
 Vue.prototype.$axios = axios
-
 
 //Vue.prototype.qs = qs
 /* eslint-disable no-new */

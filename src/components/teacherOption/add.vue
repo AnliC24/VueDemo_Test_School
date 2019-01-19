@@ -1,21 +1,21 @@
 <template>
     <div>
-        <el-form ref="form" :model="form" label-width="80px">
-  <el-form-item label="学生姓名">
-    <el-input v-model="form.name"></el-input>
+        <el-form ref="addForm" :model="addForm" label-width="80px" :rules="rule" class="demo-ruleForm">
+  <el-form-item label="学生姓名" prop="name">
+    <el-input v-model="addForm.name"></el-input>
   </el-form-item>
-  <el-form-item label="学号">
-    <el-input v-model="form.stuid"></el-input>
+  <el-form-item label="学号" prop="stuId">
+    <el-input v-model="addForm.stuId"></el-input>
   </el-form-item>
-  <el-form-item label="性别">
-    <el-radio-group v-model="form.sex">
+  <el-form-item label="性别" prop="sex">
+    <el-radio-group v-model="addForm.sex">
       <el-radio label="男"></el-radio>
       <el-radio label="女"></el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item>
-    <el-button type="primary" @click="addStu">添加</el-button>
-    <el-button>重置</el-button>
+    <el-button type="primary" @click="addStu('addForm')">添加</el-button>
+    <el-button @click="resetForm('addForm')">重置</el-button>
   </el-form-item>
 </el-form>
     </div>
@@ -25,31 +25,77 @@
 import qs from 'qs'
 export default {
     data(){
+      let checkName = (rule,value,callback) => {
+        if (!value)
+        {
+          return callback(new Error("姓名不能为空"));
+        }else {
+          callback();
+        }
+      };
+      let checkId = (rule,value,callback) => {
+        if(!value)
+        {
+          return callback(new Error("学号不能为空"));
+        }else{
+          callback();
+        }
+      };
+      let checkSex = (rule,value,callback) => {
+        if(!value)
+        {
+          return callback(new Error("请选择学生性别!"));
+        }else {
+          callback();
+        }
+      }
         return{
-           form:{
+          addForm:{
                name:'',
-               sex:'',
-               stuid:'' 
-           }
+               stuId:'',
+               sex:''
+           },
+          rule:{
+                name:[
+                  { validator:checkName,trigger:'blur'}
+                ],
+                stuId:[
+                  {  validator:checkId,trigger:'blur'}
+                ],
+                sex:[
+                  {
+                    validator:checkSex,trigger:'change'
+                  }
+                ]
+          }
         }
     },
     methods: {
-       addStu:function(){
+       addStu(formName){
            let that=this;
-           this.$axios({
-               method:'post',
-               url: '/api/teacher/add',
-               data: qs.stringify({
-                   stu_name:this.form.name,
-                   stu_sex:this.form.sex,
-                   stu_stuid:this.form.stuid  
-               })
-           }).then(function(response){
-                   console.log(response.data);
+           this.$refs[formName].validate((valid)=>{
+             if(valid)
+             {
+               this.$axios({
+                 method:'post',
+                 url: '/api/teacher/add',
+                 data: qs.stringify({
+                   stu_name:this.addForm.name,
+                   stu_sex:this.addForm.sex,
+                   stu_stuid:this.addForm.stuId
+                 })
+               }).then(function(response){
+                 console.log(response.data);
+                 that.$router.push('/info');
                }).catch(function(error){
-                   console.log(error);
+                 console.log(error);
                })
-       }  
+             }
+           })
+       },
+       resetForm(formName){
+         this.$refs[formName].resetFields();
+       }
     }
 }
 </script>

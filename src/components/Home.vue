@@ -35,7 +35,6 @@
              </el-main>
            </el-container>
         </el-container>
-        
         <button @click="go">Home</button>
     </div>
 </template>
